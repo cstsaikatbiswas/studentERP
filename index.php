@@ -55,6 +55,51 @@ switch ($url) {
         $controller = new AuthController();
         $controller->logout();
         break;
+    case 'institutes/manage':
+        $controller = new InstituteController();
+        $controller->manage();
+        break;
+    case 'institutes/add':
+        $controller = new InstituteController();
+        $controller->add();
+        break;
+
+    case 'institutes/edit':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new InstituteController();
+        $controller->edit($id);
+        break;
+
+    case 'institutes/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new InstituteController();
+        $controller->delete($id);
+        break;
+
+    case 'institutes/types':
+        $controller = new InstituteController();
+        $controller->types();
+        break;
+
+    case 'institutes/departments':
+        $controller = new InstituteController();
+        $controller->departments();
+        break;
+
+    case 'institutes/branches':
+        $controller = new InstituteController();
+        $controller->branches();
+        break;
+
+    case 'institutes/api/statistics':
+        $controller = new InstituteController();
+        $controller->getStatistics();
+        break;
+
+    case 'institutes/api/recent':
+        $controller = new InstituteController();
+        $controller->getRecent();
+        break;
     default:
         http_response_code(404);
         include BASE_PATH . '/view/404.php';
