@@ -2,8 +2,8 @@
 // Start session
 session_start();
 
-// Define base path
-define('BASE_PATH', __DIR__);
+// Load global constants
+require_once __DIR__ . '/config/Constants.php';
 
 // Autoload classes
 spl_autoload_register(function ($class) {
@@ -63,42 +63,99 @@ switch ($url) {
         $controller = new InstituteController();
         $controller->add();
         break;
-
     case 'institutes/edit':
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         $controller = new InstituteController();
         $controller->edit($id);
         break;
-
     case 'institutes/delete':
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         $controller = new InstituteController();
         $controller->delete($id);
         break;
-
     case 'institutes/types':
         $controller = new InstituteController();
         $controller->types();
         break;
-
     case 'institutes/departments':
         $controller = new InstituteController();
         $controller->departments();
         break;
-
     case 'institutes/branches':
         $controller = new InstituteController();
         $controller->branches();
         break;
-
     case 'institutes/api/statistics':
         $controller = new InstituteController();
         $controller->getStatistics();
         break;
-
     case 'institutes/api/recent':
         $controller = new InstituteController();
         $controller->getRecent();
+        break;
+    // Institute Types Routes
+    case 'institutes/types/add':
+        $controller = new InstituteController();
+        $controller->types();
+        break;
+
+    case 'institutes/types/edit':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new InstituteController();
+        $controller->editType($id);
+        break;
+
+    case 'institutes/types/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new InstituteController();
+        $controller->deleteType($id);
+        break;
+
+    // Departments Routes
+    case 'institutes/departments/add':
+        $controller = new InstituteController();
+        $controller->departments();
+        break;
+
+    case 'institutes/departments/edit':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new InstituteController();
+        $controller->editDepartment($id);
+        break;
+
+    case 'institutes/departments/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new InstituteController();
+        $controller->deleteDepartment($id);
+        break;
+
+    // Branches Routes
+    case 'institutes/branches/add':
+        $controller = new InstituteController();
+        $controller->branches();
+        break;
+
+    case 'institutes/branches/edit':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new InstituteController();
+        $controller->editBranch($id);
+        break;
+
+    case 'institutes/branches/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new InstituteController();
+        $controller->deleteBranch($id);
+        break;
+
+    // API Routes
+    case 'institutes/api/departments-by-institute':
+        $controller = new InstituteController();
+        $controller->getDepartmentsByInstitute();
+        break;
+
+    case 'institutes/api/branches-by-institute':
+        $controller = new InstituteController();
+        $controller->getBranchesByInstitute();
         break;
     default:
         http_response_code(404);

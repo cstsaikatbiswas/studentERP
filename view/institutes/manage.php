@@ -11,7 +11,7 @@
                     <i class="fas fa-university mr-2"></i>Manage Institutes
                 </h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="institutes/add" class="btn btn-primary">
+                    <a href="<?= BASE_URL?>/institutes/add" class="btn btn-primary">
                         <i class="fas fa-plus-circle mr-1"></i> Add Institute
                     </a>
                 </div>
@@ -49,7 +49,7 @@
                             <i class="fas fa-university fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">No Institutes Found</h5>
                             <p class="text-muted">Get started by adding your first institute.</p>
-                            <a href="add" class="btn btn-primary">
+                            <a href="<?= BASE_URL?>/institutes/add" class="btn btn-primary">
                                 <i class="fas fa-plus-circle mr-1"></i> Add Institute
                             </a>
                         </div>
@@ -93,7 +93,7 @@
                                             <td><?php echo $institute['established_year'] ?: 'N/A'; ?></td>
                                             <td>
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="institutes/edit?id=<?php echo $institute['id']; ?>" 
+                                                    <a href="<?= BASE_URL?>/institutes/edit?id=<?php echo $institute['id']; ?>" 
                                                        class="btn btn-primary" 
                                                        title="Edit Institute">
                                                         <i class="fas fa-edit"></i>

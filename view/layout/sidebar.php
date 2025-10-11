@@ -14,7 +14,8 @@
         <!-- Navigation Menu -->
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], 'dashboard') !== false ? 'active' : ''; ?>" href="dashboard">
+                <a class="nav-link <?php echo (isset($current_page) && $current_page == 'dashboard') ? 'active' : ''; ?>" 
+                   href="<?= BASE_URL?>/dashboard">
                     <i class="fas fa-tachometer-alt mr-2"></i>
                     Dashboard
                 </a>
@@ -23,40 +24,40 @@
             <!-- Institutes Module -->
             <li class="nav-item">
                 <a class="nav-link collapsed" data-toggle="collapse" href="#institutesCollapse" 
-                   aria-expanded="<?php echo strpos($_SERVER['REQUEST_URI'], 'institutes') !== false ? 'true' : 'false'; ?>">
+                   aria-expanded="<?php echo (isset($current_page) && strpos($current_page, 'institutes') !== false) ? 'true' : 'false'; ?>">
                     <i class="fas fa-university mr-2"></i>
                     Institutes
                     <i class="fas fa-chevron-down float-right mt-1"></i>
                 </a>
-                <div class="collapse <?php echo strpos($_SERVER['REQUEST_URI'], 'institutes') !== false ? 'show' : ''; ?>" id="institutesCollapse">
+                <div class="collapse <?php echo (isset($current_page) && strpos($current_page, 'institutes') !== false) ? 'show' : ''; ?>" id="institutesCollapse">
                     <ul class="nav flex-column pl-3">
                         <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], 'institutes/manage') !== false ? 'active' : ''; ?>" 
-                               href="institutes/manage">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/manage') ? 'active' : ''; ?>" 
+                               href="<?= BASE_URL?>/institutes/manage">
                                 <i class="fas fa-list mr-2"></i>Manage Institutes
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], 'institutes/add') !== false ? 'active' : ''; ?>" 
-                               href="add">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/add') ? 'active' : ''; ?>" 
+                               href="<?= BASE_URL?>/institutes/add">
                                 <i class="fas fa-plus-circle mr-2"></i>Add Institute
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], 'institutes/types') !== false ? 'active' : ''; ?>" 
-                               href="institutes/types">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/types') ? 'active' : ''; ?>" 
+                               href="<?= BASE_URL?>/institutes/types">
                                 <i class="fas fa-tags mr-2"></i>Institute Types
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], 'institutes/departments') !== false ? 'active' : ''; ?>" 
-                               href="institutes/departments">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/departments') ? 'active' : ''; ?>" 
+                               href="<?= BASE_URL?>/institutes/departments">
                                 <i class="fas fa-building mr-2"></i>Departments
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], 'institutes/branches') !== false ? 'active' : ''; ?>" 
-                               href="institutes/branches">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/branches') ? 'active' : ''; ?>" 
+                               href="<?= BASE_URL?>/institutes/branches">
                                 <i class="fas fa-code-branch mr-2"></i>Branches
                             </a>
                         </li>
@@ -92,7 +93,8 @@
 
             <!-- Settings -->
             <li class="nav-item">
-                <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], 'profile') !== false ? 'active' : ''; ?>" href="profile">
+                <a class="nav-link <?php echo (isset($current_page) && $current_page == 'profile') ? 'active' : ''; ?>" 
+                   href="<?= BASE_URL?>/profile">
                     <i class="fas fa-cog mr-2"></i>
                     Settings
                 </a>
