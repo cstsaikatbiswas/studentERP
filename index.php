@@ -146,6 +146,72 @@ switch ($url) {
         $controller = new InstituteController();
         $controller->deleteBranch($id);
         break;
+    // Academic Module Routes
+    case 'academic/programs':
+        $controller = new AcademicController();
+        $controller->programs();
+        break;
+
+    case 'academic/programs/add':
+        $controller = new AcademicController();
+        $controller->addProgram();
+        break;
+
+    case 'academic/programs/edit':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->editProgram($id);
+        break;
+
+    case 'academic/programs/view':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->viewProgram($id);
+        break;
+
+    case 'academic/programs/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->deleteProgram($id);
+        break;
+
+    case 'academic/batches':
+        $controller = new AcademicController();
+        $controller->batches();
+        break;
+
+    case 'academic/batches/add':
+        $controller = new AcademicController();
+        $controller->addBatch();
+        break;
+
+    case 'academic/batches/edit':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->editBatch($id);
+        break;
+
+    case 'academic/subjects':
+        $controller = new AcademicController();
+        $controller->subjects();
+        break;
+
+    case 'academic/curriculum':
+        $program_id = isset($_GET['program_id']) ? $_GET['program_id'] : null;
+        $controller = new AcademicController();
+        $controller->curriculum($program_id);
+        break;
+
+    // API Routes
+    case 'academic/api/programs-by-department':
+        $controller = new AcademicController();
+        $controller->getProgramsByDepartment();
+        break;
+
+    case 'academic/api/batches-by-program':
+        $controller = new AcademicController();
+        $controller->getBatchesByProgram();
+        break;
 
     // API Routes
     case 'institutes/api/departments-by-institute':

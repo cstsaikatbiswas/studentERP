@@ -65,13 +65,54 @@
                 </div>
             </li>
 
-            <!-- Other Modules (Placeholders) -->
+            <!-- Academic Module -->
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-book mr-2"></i>
+                <a class="nav-link collapsed" data-toggle="collapse" href="#academicCollapse" 
+                aria-expanded="<?php echo (isset($current_page) && strpos($current_page, 'academic') !== false) ? 'true' : 'false'; ?>">
+                    <i class="fas fa-graduation-cap mr-2"></i>
                     Academic
+                    <i class="fas fa-chevron-down float-right mt-1"></i>
                 </a>
+                <div class="collapse <?php echo (isset($current_page) && strpos($current_page, 'academic') !== false) ? 'show' : ''; ?>" id="academicCollapse">
+                    <ul class="nav flex-column pl-3">
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'academic/programs') ? 'active' : ''; ?>" 
+                            href="<?php echo BASE_URL; ?>/academic/programs">
+                                <i class="fas fa-list mr-2"></i>Programs & Courses
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'academic/batches') ? 'active' : ''; ?>" 
+                            href="<?php echo BASE_URL; ?>/academic/batches">
+                                <i class="fas fa-users mr-2"></i>Batch Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'academic/subjects') ? 'active' : ''; ?>" 
+                            href="<?php echo BASE_URL; ?>/academic/subjects">
+                                <i class="fas fa-book mr-2"></i>Subjects
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-calendar-alt mr-2"></i>Class Scheduling
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-clipboard-check mr-2"></i>Attendance
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-chart-line mr-2"></i>Assessment
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
+
+            <!-- Other Modules (Placeholders) -->
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-users mr-2"></i>
