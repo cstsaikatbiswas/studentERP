@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2025 at 08:28 AM
+-- Generation Time: Nov 14, 2025 at 08:11 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -75,6 +75,14 @@ CREATE TABLE `academic_programs` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `academic_programs`
+--
+
+INSERT INTO `academic_programs` (`id`, `name`, `code`, `description`, `duration_years`, `total_credits`, `department_id`, `degree_type`, `program_level`, `accreditation_status`, `start_date`, `end_date`, `total_semesters`, `max_students`, `current_students`, `program_fee`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 'Full Time Diploma Course', 'DIP1', 'Full Time Diploma Course Full Time Diploma Course', 3, 100, 1, 'diploma', 'diploma', 'accredited', '2025-08-01', '2026-01-31', 6, 60, 52, 152000.00, '', 1, '2025-11-14 07:06:54', '2025-11-14 07:06:54'),
+(2, 'Vocational Diploma Course', 'DIP2', 'Vocational Diploma Course (2 years)', 2, 80, 1, 'diploma', 'diploma', 'accredited', '2025-08-01', '2026-01-31', 4, 20, 15, 100000.00, '', 1, '2025-11-14 07:08:32', '2025-11-14 07:08:32');
 
 -- --------------------------------------------------------
 
@@ -222,6 +230,110 @@ CREATE TABLE `program_subjects` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `student_batches`
+--
+
+CREATE TABLE `student_batches` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `batch_id` int(11) NOT NULL,
+  `enrollment_number` varchar(50) NOT NULL,
+  `enrollment_date` date NOT NULL,
+  `enrollment_type` enum('regular','lateral','transfer','exchange') DEFAULT 'regular',
+  `roll_number` varchar(20) DEFAULT NULL,
+  `academic_session` varchar(20) DEFAULT NULL,
+  `current_semester` int(11) DEFAULT 1,
+  `admission_category` enum('general','obc','sc','st','ews','pwd','sports','cultural') DEFAULT 'general',
+  `quota_category` enum('management','government','nri','foreign') DEFAULT 'management',
+  `fee_category` enum('regular','self_finance','scholarship','free_ship') DEFAULT 'regular',
+  `academic_status` enum('active','completed','dropped','suspended','transfered','graduated') DEFAULT 'active',
+  `promotion_status` enum('promoted','detained','under_review') DEFAULT 'promoted',
+  `current_cgpa` decimal(4,2) DEFAULT 0.00,
+  `total_credits_earned` decimal(6,2) DEFAULT 0.00,
+  `total_backlogs` int(11) DEFAULT 0,
+  `total_attendance_percentage` decimal(5,2) DEFAULT 0.00,
+  `attendance_shortage` tinyint(1) DEFAULT 0,
+  `fee_status` enum('paid','pending','partial','overdue') DEFAULT 'pending',
+  `last_fee_paid_date` date DEFAULT NULL,
+  `next_fee_due_date` date DEFAULT NULL,
+  `guardian_name` varchar(255) DEFAULT NULL,
+  `guardian_relation` varchar(50) DEFAULT NULL,
+  `guardian_phone` varchar(20) DEFAULT NULL,
+  `guardian_email` varchar(100) DEFAULT NULL,
+  `guardian_address` text DEFAULT NULL,
+  `previous_qualification` varchar(255) DEFAULT NULL,
+  `previous_school_college` varchar(255) DEFAULT NULL,
+  `previous_percentage` decimal(5,2) DEFAULT NULL,
+  `previous_year` year(4) DEFAULT NULL,
+  `documents_submitted` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`documents_submitted`)),
+  `document_verification_status` enum('pending','verified','rejected') DEFAULT 'pending',
+  `document_verification_notes` text DEFAULT NULL,
+  `hostel_required` tinyint(1) DEFAULT 0,
+  `transport_required` tinyint(1) DEFAULT 0,
+  `hostel_room_number` varchar(20) DEFAULT NULL,
+  `transport_route_id` int(11) DEFAULT NULL,
+  `admission_confirmed_date` date DEFAULT NULL,
+  `classes_started_date` date DEFAULT NULL,
+  `last_attendance_date` date DEFAULT NULL,
+  `expected_graduation_date` date DEFAULT NULL,
+  `actual_graduation_date` date DEFAULT NULL,
+  `status` enum('active','inactive','graduated','withdrawn') DEFAULT 'active',
+  `is_deleted` tinyint(1) DEFAULT 0,
+  `created_by` int(11) DEFAULT NULL,
+  `updated_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_batch_history`
+--
+
+CREATE TABLE `student_batch_history` (
+  `id` int(11) NOT NULL,
+  `student_batch_id` int(11) NOT NULL,
+  `batch_id` int(11) NOT NULL,
+  `from_semester` int(11) DEFAULT NULL,
+  `to_semester` int(11) DEFAULT NULL,
+  `academic_status` enum('active','completed','dropped','suspended','transfered','graduated') DEFAULT NULL,
+  `promotion_status` enum('promoted','detained','under_review') DEFAULT NULL,
+  `reason` text DEFAULT NULL,
+  `changed_by` int(11) DEFAULT NULL,
+  `changed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `remarks` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_semester_registration`
+--
+
+CREATE TABLE `student_semester_registration` (
+  `id` int(11) NOT NULL,
+  `student_batch_id` int(11) NOT NULL,
+  `semester` int(11) NOT NULL,
+  `academic_year` varchar(20) DEFAULT NULL,
+  `registration_date` date DEFAULT NULL,
+  `registration_status` enum('registered','pending','rejected','completed') DEFAULT 'pending',
+  `total_credits_registered` decimal(6,2) DEFAULT 0.00,
+  `total_subjects_registered` int(11) DEFAULT 0,
+  `fee_paid` tinyint(1) DEFAULT 0,
+  `fee_amount` decimal(10,2) DEFAULT 0.00,
+  `fee_paid_date` date DEFAULT NULL,
+  `approval_status` enum('approved','pending','rejected') DEFAULT 'pending',
+  `approved_by` int(11) DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `subjects`
 --
 
@@ -333,6 +445,38 @@ ALTER TABLE `program_subjects`
   ADD KEY `idx_program_subject_semester` (`semester`);
 
 --
+-- Indexes for table `student_batches`
+--
+ALTER TABLE `student_batches`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `enrollment_number` (`enrollment_number`),
+  ADD KEY `idx_student_batches_student` (`student_id`),
+  ADD KEY `idx_student_batches_batch` (`batch_id`),
+  ADD KEY `idx_student_batches_academic_status` (`academic_status`),
+  ADD KEY `idx_student_batches_enrollment_date` (`enrollment_date`),
+  ADD KEY `idx_student_batches_roll_number` (`roll_number`),
+  ADD KEY `idx_student_batches_enrollment_number` (`enrollment_number`),
+  ADD KEY `idx_student_batches_status` (`status`),
+  ADD KEY `idx_student_batches_current_semester` (`current_semester`);
+
+--
+-- Indexes for table `student_batch_history`
+--
+ALTER TABLE `student_batch_history`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `student_batch_id` (`student_batch_id`),
+  ADD KEY `batch_id` (`batch_id`),
+  ADD KEY `changed_by` (`changed_by`);
+
+--
+-- Indexes for table `student_semester_registration`
+--
+ALTER TABLE `student_semester_registration`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_student_semester` (`student_batch_id`,`semester`),
+  ADD KEY `approved_by` (`approved_by`);
+
+--
 -- Indexes for table `subjects`
 --
 ALTER TABLE `subjects`
@@ -363,7 +507,7 @@ ALTER TABLE `academic_batches`
 -- AUTO_INCREMENT for table `academic_programs`
 --
 ALTER TABLE `academic_programs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `branches`
@@ -393,6 +537,24 @@ ALTER TABLE `institute_types`
 -- AUTO_INCREMENT for table `program_subjects`
 --
 ALTER TABLE `program_subjects`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `student_batches`
+--
+ALTER TABLE `student_batches`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `student_batch_history`
+--
+ALTER TABLE `student_batch_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `student_semester_registration`
+--
+ALTER TABLE `student_semester_registration`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -444,6 +606,21 @@ ALTER TABLE `departments`
 ALTER TABLE `program_subjects`
   ADD CONSTRAINT `program_subjects_ibfk_1` FOREIGN KEY (`program_id`) REFERENCES `academic_programs` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `program_subjects_ibfk_2` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `student_batch_history`
+--
+ALTER TABLE `student_batch_history`
+  ADD CONSTRAINT `student_batch_history_ibfk_1` FOREIGN KEY (`student_batch_id`) REFERENCES `student_batches` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_batch_history_ibfk_2` FOREIGN KEY (`batch_id`) REFERENCES `academic_batches` (`id`),
+  ADD CONSTRAINT `student_batch_history_ibfk_3` FOREIGN KEY (`changed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `student_semester_registration`
+--
+ALTER TABLE `student_semester_registration`
+  ADD CONSTRAINT `student_semester_registration_ibfk_1` FOREIGN KEY (`student_batch_id`) REFERENCES `student_batches` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_semester_registration_ibfk_2` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `subjects`
