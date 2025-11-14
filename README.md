@@ -1,3 +1,4 @@
+```
 Academic
 ├── Programs & Courses
 │   ├── Manage Programs
@@ -31,7 +32,7 @@ Academic
     ├── View Calendar
     ├── Add Event
     └── Holiday List
-
+```
 Academic Development
 Phase 1: Programs & Courses + Batch Management
 
@@ -50,3 +51,22 @@ password: 123456
 
 username: xyz@domain.com
 password: Ram12345
+
+
+-- Prompt for Module Design:
+
+1st Prompt-->
+Upload structure.md
+Create Academic module for Student ERP project.  
+1st suggest me with the sub modules and database we have to create. 
+After that we will start development. Dont give any coding part just structure and module layouts.
+
+2nd Prompt-->
+Uplod view/layout/sidebar.php and index.php
+Prompt: Modify these pages respect to the previous module design and create a data base schema with possible table requirements.
+
+3rd Prompt-->
+design the additional pages
+
+4th prompt-->
+implement the detailed CRUD functionality.

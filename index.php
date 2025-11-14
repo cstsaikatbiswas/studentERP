@@ -191,9 +191,38 @@ switch ($url) {
         $controller->editBatch($id);
         break;
 
+    case 'academic/batches/view':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->viewBatch($id);
+        break;
+
+    case 'academic/batches/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->deleteBatch($id);
+        break;
+
     case 'academic/subjects':
         $controller = new AcademicController();
         $controller->subjects();
+        break;
+
+    case 'academic/subjects/add':
+        $controller = new AcademicController();
+        $controller->addSubject();
+        break;
+
+    case 'academic/subjects/edit':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->editSubject($id);
+        break;
+
+    case 'academic/subjects/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->deleteSubject($id);
         break;
 
     case 'academic/curriculum':
@@ -202,7 +231,18 @@ switch ($url) {
         $controller->curriculum($program_id);
         break;
 
-    // API Routes
+    case 'academic/curriculum/add-subject':
+        $controller = new AcademicController();
+        $controller->addSubjectToProgram();
+        break;
+
+    case 'academic/curriculum/remove-subject':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->removeSubjectFromProgram($id);
+        break;
+
+    // Academic API Routes
     case 'academic/api/programs-by-department':
         $controller = new AcademicController();
         $controller->getProgramsByDepartment();
@@ -213,6 +253,15 @@ switch ($url) {
         $controller->getBatchesByProgram();
         break;
 
+    case 'academic/api/program-statistics':
+        $controller = new AcademicController();
+        $controller->getProgramStatistics();
+        break;
+
+    // case 'academic/api/subject-usage':
+    //     $controller = new AcademicController();
+    //     $controller->getSubjectUsage();
+    //     break;
     // API Routes
     case 'institutes/api/departments-by-institute':
         $controller = new InstituteController();

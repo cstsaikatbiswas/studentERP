@@ -174,7 +174,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="max_students" class="font-weight-bold">Maximum Students</label>
                                             <input type="number" class="form-control" id="max_students" name="max_students"
@@ -182,7 +182,15 @@
                                                    min="1" placeholder="e.g., 100">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="current_students" class="font-weight-bold">Current Students</label>
+                                            <input type="number" class="form-control" id="current_students" name="current_students"
+                                                   value="<?php echo htmlspecialchars($formData['current_students']); ?>"
+                                                   min="1" placeholder="e.g., 100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="program_fee" class="font-weight-bold">Program Fee (₹)</label>
                                             <input type="number" class="form-control" id="program_fee" name="program_fee"
