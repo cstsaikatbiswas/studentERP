@@ -258,10 +258,10 @@ switch ($url) {
         $controller->getProgramStatistics();
         break;
 
-    // case 'academic/api/subject-usage':
-    //     $controller = new AcademicController();
-    //     $controller->getSubjectUsage();
-    //     break;
+    case 'academic/api/subject-usage':
+        $controller = new AcademicController();
+        $controller->getSubjectUsage();
+        break;
     // API Routes
     case 'institutes/api/departments-by-institute':
         $controller = new InstituteController();
@@ -272,6 +272,66 @@ switch ($url) {
         $controller = new InstituteController();
         $controller->getBranchesByInstitute();
         break;
+    // Curriculum Management Routes
+    case 'academic/curriculum/manage':
+        $controller = new AcademicController();
+        $controller->curriculum();
+        break;
+
+    case 'academic/curriculum/add-subject':
+        $controller = new AcademicController();
+        $controller->addSubjectToCurriculum();
+        break;
+
+    case 'academic/curriculum/semester-view':
+        $controller = new AcademicController();
+        $controller->semesterView();
+        break;
+
+    case 'academic/curriculum/remove-subject':
+        $controller = new AcademicController();
+        $controller->removeSubjectFromCurriculum();
+        break;
+
+    case 'academic/curriculum/update-subject':
+        $controller = new AcademicController();
+        $controller->updateCurriculumSubject();
+        break;
+
+    case 'academic/curriculum/edit-subject-form':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->editSubjectForm($id);
+        break;
+    // Subject Management Routes
+    case 'academic/subjects':
+        $controller = new AcademicController();
+        $controller->subjects();
+        break;
+
+    case 'academic/subjects/add':
+        $controller = new AcademicController();
+        $controller->addSubject();
+        break;
+
+    case 'academic/subjects/edit':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->editSubject($id);
+        break;
+
+    case 'academic/subjects/view':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->viewSubject($id);
+        break;
+
+    case 'academic/subjects/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new AcademicController();
+        $controller->deleteSubject($id);
+        break;
+
     default:
         http_response_code(404);
         include BASE_PATH . '/view/404.php';

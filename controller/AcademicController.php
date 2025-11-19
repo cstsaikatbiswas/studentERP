@@ -503,6 +503,29 @@ class AcademicController {
         include BASE_PATH . '/view/layout/footer.php';
     }
 
+    public function viewSubject($id = null) {
+        AuthController::requireLogin();
+
+        if (!$id) {
+            header('Location: ' . BASE_URL . '/academic/subjects');
+            exit();
+        }
+
+        $this->subjectModel->id = $id;
+        $subject = $this->subjectModel->readOne();
+
+        if (!$subject) {
+            $_SESSION['error_message'] = 'Subject not found.';
+            header('Location: ' . BASE_URL . '/academic/subjects');
+            exit();
+        }
+
+        $page_title = "View Subject - " . $subject['name'];
+        include BASE_PATH . '/view/layout/header.php';
+        include BASE_PATH . '/view/academic/subjects/view.php';
+        include BASE_PATH . '/view/layout/footer.php';
+    }
+
     public function editSubject($id = null) {
         AuthController::requireLogin();
 
@@ -583,35 +606,6 @@ class AcademicController {
         header('Location: ' . BASE_URL . '/academic/subjects');
         exit();
     }
-
-    // Curriculum Management
-    public function curriculum($program_id = null) {
-        AuthController::requireLogin();
-
-        if (!$program_id) {
-            header('Location: ' . BASE_URL . '/academic/programs');
-            exit();
-        }
-
-        $this->programModel->id = $program_id;
-        $program = $this->programModel->readOne();
-
-        if (!$program) {
-            $_SESSION['error_message'] = 'Program not found.';
-            header('Location: ' . BASE_URL . '/academic/programs');
-            exit();
-        }
-
-        $curriculum = $this->programSubjectModel->getProgramCurriculum($program_id);
-        $subjects = $this->subjectModel->readAll();
-        $creditSummary = $this->programSubjectModel->getCreditSummary($program_id);
-
-        $page_title = "Curriculum: " . $program['name'];
-        include BASE_PATH . '/view/layout/header.php';
-        include BASE_PATH . '/view/academic/curriculum/manage.php';
-        include BASE_PATH . '/view/layout/footer.php';
-    }
-
     public function addSubjectToProgram() {
         AuthController::requireLogin();
 
@@ -872,5 +866,472 @@ class AcademicController {
         $stmt->close();
 
         return $entry;
+    }
+
+    // Curriculum Management Methods
+    public function curriculum() {
+        AuthController::requireLogin();
+        
+        $program_id = isset($_GET['program_id']) ? $_GET['program_id'] : null;
+        
+        if (!$program_id) {
+            $_SESSION['error_message'] = 'Program ID is required.';
+            header('Location: ' . BASE_URL . '/academic/programs');
+            exit();
+        }
+
+        // Get program details
+        $this->programModel->id = $program_id;
+        $program = $this->programModel->readOne();
+        
+        if (!$program) {
+            $_SESSION['error_message'] = 'Program not found.';
+            header('Location: ' . BASE_URL . '/academic/programs');
+            exit();
+        }
+
+        // Get curriculum data (subjects by semester)
+        $curriculum = $this->getProgramCurriculum($program_id);
+        
+        // Get available subjects for adding
+        $availableSubjects = $this->subjectModel->readAll();
+        
+        // Get departments for filter
+        $departments = $this->departmentModel->readAll();
+
+        $page_title = "Curriculum Management - " . $program['name'];
+        include BASE_PATH . '/view/layout/header.php';
+        include BASE_PATH . '/view/academic/curriculum/manage.php';
+        include BASE_PATH . '/view/layout/footer.php';
+    }
+
+    public function addSubjectToCurriculum() {
+        AuthController::requireLogin();
+        
+        $program_id = isset($_GET['program_id']) ? $_GET['program_id'] : null;
+        
+        if (!$program_id) {
+            $_SESSION['error_message'] = 'Program ID is required.';
+            header('Location: ' . BASE_URL . '/academic/programs');
+            exit();
+        }
+
+        // Get program details
+        $this->programModel->id = $program_id;
+        $program = $this->programModel->readOne();
+        
+        if (!$program) {
+            $_SESSION['error_message'] = 'Program not found.';
+            header('Location: ' . BASE_URL . '/academic/programs');
+            exit();
+        }
+
+        $error = '';
+        $success = '';
+        $formData = [
+            'subject_id' => '',
+            'semester' => 1,
+            'is_optional' => false,
+            'min_credits' => '',
+            'max_credits' => '',
+            'course_code' => '',
+            'course_type' => 'mandatory',
+            'teaching_methodology' => '',
+            'assessment_pattern' => '{}'
+        ];
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $formData = array_map([$this, 'sanitizeInput'], $_POST);
+            $formData['is_optional'] = isset($_POST['is_optional']) ? true : false;
+            
+            $validationError = $this->validateCurriculumSubjectData($formData, $program_id);
+            
+            if ($validationError) {
+                $error = $validationError;
+            } else {
+                $this->programSubjectModel->program_id = $program_id;
+                $this->programSubjectModel->subject_id = $formData['subject_id'];
+                $this->programSubjectModel->semester = $formData['semester'];
+                $this->programSubjectModel->is_optional = $formData['is_optional'];
+                $this->programSubjectModel->min_credits = $formData['min_credits'];
+                $this->programSubjectModel->max_credits = $formData['max_credits'];
+                $this->programSubjectModel->course_code = $formData['course_code'];
+                $this->programSubjectModel->course_type = $formData['course_type'];
+                $this->programSubjectModel->teaching_methodology = $formData['teaching_methodology'];
+                $this->programSubjectModel->assessment_pattern = $formData['assessment_pattern'];
+                $this->programSubjectModel->status = 'active';
+
+                if ($this->programSubjectModel->create()) {
+                    $success = 'Subject added to curriculum successfully!';
+                    $formData = [
+                        'subject_id' => '',
+                        'semester' => 1,
+                        'is_optional' => false,
+                        'min_credits' => '',
+                        'max_credits' => '',
+                        'course_code' => '',
+                        'course_type' => 'mandatory',
+                        'teaching_methodology' => '',
+                        'assessment_pattern' => '{}'
+                    ];
+                } else {
+                    $error = 'Failed to add subject to curriculum. Please try again.';
+                }
+            }
+        }
+
+        $availableSubjects = $this->subjectModel->readAll();
+        $semesters = range(1, $program['total_semesters']);
+
+        $page_title = "Add Subject to Curriculum - " . $program['name'];
+        include BASE_PATH . '/view/layout/header.php';
+        include BASE_PATH . '/view/academic/curriculum/add_subject.php';
+        include BASE_PATH . '/view/layout/footer.php';
+    }
+
+    public function semesterView() {
+        AuthController::requireLogin();
+        
+        $program_id = isset($_GET['program_id']) ? $_GET['program_id'] : null;
+        $semester = isset($_GET['semester']) ? $_GET['semester'] : 1;
+        
+        if (!$program_id) {
+            $_SESSION['error_message'] = 'Program ID is required.';
+            header('Location: ' . BASE_URL . '/academic/programs');
+            exit();
+        }
+
+        // Get program details
+        $this->programModel->id = $program_id;
+        $program = $this->programModel->readOne();
+        
+        if (!$program) {
+            $_SESSION['error_message'] = 'Program not found.';
+            header('Location: ' . BASE_URL . '/academic/programs');
+            exit();
+        }
+
+        // Get subjects for the specific semester
+        $semesterSubjects = $this->getSemesterSubjects($program_id, $semester);
+        $semesters = range(1, $program['total_semesters']);
+
+        // Calculate semester statistics
+        $semesterStats = $this->calculateSemesterStats($semesterSubjects);
+
+        $page_title = "Semester " . $semester . " - " . $program['name'];
+        include BASE_PATH . '/view/layout/header.php';
+        include BASE_PATH . '/view/academic/curriculum/semester_view.php';
+        include BASE_PATH . '/view/layout/footer.php';
+    }
+
+    public function removeSubjectFromCurriculum() {
+        AuthController::requireLogin();
+        
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $program_id = isset($_GET['program_id']) ? $_GET['program_id'] : null;
+        
+        if (!$id || !$program_id) {
+            $_SESSION['error_message'] = 'Subject mapping ID and Program ID are required.';
+            header('Location: ' . BASE_URL . '/academic/programs');
+            exit();
+        }
+
+        $this->programSubjectModel->id = $id;
+        
+        if ($this->programSubjectModel->delete()) {
+            $_SESSION['success_message'] = 'Subject removed from curriculum successfully!';
+        } else {
+            $_SESSION['error_message'] = 'Failed to remove subject from curriculum. Please try again.';
+        }
+
+        header('Location: ' . BASE_URL . '/academic/curriculum?program_id=' . $program_id);
+        exit();
+    }
+
+    public function updateCurriculumSubject() {
+        AuthController::requireLogin();
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id = isset($_POST['id']) ? $_POST['id'] : null;
+            $program_id = isset($_POST['program_id']) ? $_POST['program_id'] : null;
+            
+            if (!$id || !$program_id) {
+                $_SESSION['error_message'] = 'Required parameters missing.';
+                header('Location: ' . BASE_URL . '/academic/programs');
+                exit();
+            }
+
+            $formData = array_map([$this, 'sanitizeInput'], $_POST);
+            $formData['is_optional'] = isset($_POST['is_optional']) ? true : false;
+            
+            $validationError = $this->validateCurriculumSubjectData($formData, $program_id, $id);
+            
+            if ($validationError) {
+                $_SESSION['error_message'] = $validationError;
+            } else {
+                $this->programSubjectModel->id = $id;
+                $this->programSubjectModel->semester = $formData['semester'];
+                $this->programSubjectModel->is_optional = $formData['is_optional'];
+                $this->programSubjectModel->min_credits = $formData['min_credits'];
+                $this->programSubjectModel->max_credits = $formData['max_credits'];
+                $this->programSubjectModel->course_code = $formData['course_code'];
+                $this->programSubjectModel->course_type = $formData['course_type'];
+                $this->programSubjectModel->teaching_methodology = $formData['teaching_methodology'];
+                $this->programSubjectModel->assessment_pattern = $formData['assessment_pattern'];
+
+                if ($this->programSubjectModel->update()) {
+                    $_SESSION['success_message'] = 'Subject updated successfully!';
+                } else {
+                    $_SESSION['error_message'] = 'Failed to update subject. Please try again.';
+                }
+            }
+
+            header('Location: ' . BASE_URL . '/academic/curriculum?program_id=' . $program_id);
+            exit();
+        }
+    }
+
+    // Helper Methods
+    private function getProgramCurriculum($program_id) {
+        $query = "SELECT ps.*, s.name as subject_name, s.code as subject_code, 
+                        s.credit_hours, s.subject_type, s.difficulty_level,
+                        d.name as department_name
+                FROM program_subjects ps
+                LEFT JOIN subjects s ON ps.subject_id = s.id
+                LEFT JOIN departments d ON s.department_id = d.id
+                WHERE ps.program_id = ?
+                ORDER BY ps.semester ASC, ps.course_type DESC, s.name ASC";
+        
+        $stmt = $this->db->prepare($query);
+        
+        if (!$stmt) {
+            return [];
+        }
+
+        $stmt->bind_param("i", $program_id);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $subjects = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        // Group by semester
+        $curriculum = [];
+        foreach ($subjects as $subject) {
+            $semester = $subject['semester'];
+            if (!isset($curriculum[$semester])) {
+                $curriculum[$semester] = [];
+            }
+            $curriculum[$semester][] = $subject;
+        }
+
+        return $curriculum;
+    }
+
+    private function getSemesterSubjects($program_id, $semester) {
+        $query = "SELECT ps.*, s.name as subject_name, s.code as subject_code, 
+                        s.credit_hours, s.theory_hours, s.practical_hours,
+                        s.subject_type, s.difficulty_level, s.description,
+                        s.learning_outcomes, d.name as department_name
+                FROM program_subjects ps
+                LEFT JOIN subjects s ON ps.subject_id = s.id
+                LEFT JOIN departments d ON s.department_id = d.id
+                WHERE ps.program_id = ? AND ps.semester = ?
+                ORDER BY ps.course_type DESC, s.name ASC";
+        
+        $stmt = $this->db->prepare($query);
+        
+        if (!$stmt) {
+            return [];
+        }
+
+        $stmt->bind_param("ii", $program_id, $semester);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $subjects = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $subjects;
+    }
+
+    private function calculateSemesterStats($subjects) {
+        $stats = [
+            'total_subjects' => count($subjects),
+            'total_credits' => 0,
+            'theory_hours' => 0,
+            'practical_hours' => 0,
+            'core_subjects' => 0,
+            'elective_subjects' => 0,
+            'mandatory_courses' => 0,
+            'optional_courses' => 0
+        ];
+
+        foreach ($subjects as $subject) {
+            $stats['total_credits'] += $subject['credit_hours'];
+            $stats['theory_hours'] += $subject['theory_hours'];
+            $stats['practical_hours'] += $subject['practical_hours'];
+            
+            if ($subject['subject_type'] == 'core') {
+                $stats['core_subjects']++;
+            } elseif ($subject['subject_type'] == 'elective') {
+                $stats['elective_subjects']++;
+            }
+            
+            if ($subject['course_type'] == 'mandatory') {
+                $stats['mandatory_courses']++;
+            } else {
+                $stats['optional_courses']++;
+            }
+        }
+
+        return $stats;
+    }
+
+    private function validateCurriculumSubjectData($data, $program_id, $id = null) {
+        if (empty($data['subject_id']) || empty($data['semester'])) {
+            return 'Subject and Semester are required fields.';
+        }
+
+        if (!is_numeric($data['semester']) || $data['semester'] < 1) {
+            return 'Semester must be a positive number.';
+        }
+
+        // Check if subject already exists in the same semester for this program
+        $query = "SELECT id FROM program_subjects 
+                WHERE program_id = ? AND subject_id = ? AND semester = ?";
+        
+        if ($id) {
+            $query .= " AND id != ?";
+        }
+
+        $stmt = $this->db->prepare($query);
+        
+        if (!$stmt) {
+            return 'Database error. Please try again.';
+        }
+
+        if ($id) {
+            $stmt->bind_param("iiii", $program_id, $data['subject_id'], $data['semester'], $id);
+        } else {
+            $stmt->bind_param("iii", $program_id, $data['subject_id'], $data['semester']);
+        }
+
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $stmt->close();
+            return 'This subject is already added to the same semester in this program.';
+        }
+
+        $stmt->close();
+        return null;
+    }
+    public function editSubjectForm($id) {
+        AuthController::requireLogin();
+        
+        if (!$id) {
+            echo '<div class="alert alert-danger">Subject mapping ID is required.</div>';
+            return;
+        }
+
+        $this->programSubjectModel->id = $id;
+        $subjectMapping = $this->programSubjectModel->readOne();
+        
+        if (!$subjectMapping) {
+            echo '<div class="alert alert-danger">Subject mapping not found.</div>';
+            return;
+        }
+
+        // Get program details for semester range
+        $this->programModel->id = $subjectMapping['program_id'];
+        $program = $this->programModel->readOne();
+        $semesters = range(1, $program['total_semesters']);
+
+        // Generate the edit form
+        echo '
+        <input type="hidden" name="id" value="' . $subjectMapping['id'] . '">
+        <input type="hidden" name="program_id" value="' . $subjectMapping['program_id'] . '">
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="edit_semester" class="font-weight-bold">Semester *</label>
+                    <select class="form-control" id="edit_semester" name="semester" required>';
+        
+        foreach ($semesters as $sem) {
+            $selected = $subjectMapping['semester'] == $sem ? 'selected' : '';
+            echo '<option value="' . $sem . '" ' . $selected . '>Semester ' . $sem . '</option>';
+        }
+        
+        echo '</select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="edit_course_type" class="font-weight-bold">Course Type *</label>
+                    <select class="form-control" id="edit_course_type" name="course_type" required>
+                        <option value="mandatory" ' . ($subjectMapping['course_type'] == 'mandatory' ? 'selected' : '') . '>Mandatory</option>
+                        <option value="elective" ' . ($subjectMapping['course_type'] == 'elective' ? 'selected' : '') . '>Elective</option>
+                        <option value="audit" ' . ($subjectMapping['course_type'] == 'audit' ? 'selected' : '') . '>Audit</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="edit_course_code" class="font-weight-bold">Course Code</label>
+                    <input type="text" class="form-control" id="edit_course_code" name="course_code"
+                        value="' . htmlspecialchars($subjectMapping['course_code']) . '"
+                        placeholder="Enter course code">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="form-check mt-4">
+                        <input type="checkbox" class="form-check-input" id="edit_is_optional" name="is_optional"
+                            ' . ($subjectMapping['is_optional'] ? 'checked' : '') . '>
+                        <label class="form-check-label font-weight-bold" for="edit_is_optional">
+                            Optional Subject
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="edit_min_credits" class="font-weight-bold">Minimum Credits</label>
+                    <input type="number" class="form-control" id="edit_min_credits" name="min_credits"
+                        value="' . htmlspecialchars($subjectMapping['min_credits']) . '"
+                        step="0.5" min="0" max="10">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="edit_max_credits" class="font-weight-bold">Maximum Credits</label>
+                    <input type="number" class="form-control" id="edit_max_credits" name="max_credits"
+                        value="' . htmlspecialchars($subjectMapping['max_credits']) . '"
+                        step="0.5" min="0" max="10">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="edit_teaching_methodology" class="font-weight-bold">Teaching Methodology</label>
+            <textarea class="form-control" id="edit_teaching_methodology" name="teaching_methodology" 
+                    rows="3">' . htmlspecialchars($subjectMapping['teaching_methodology']) . '</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="edit_assessment_pattern" class="font-weight-bold">Assessment Pattern</label>
+            <textarea class="form-control" id="edit_assessment_pattern" name="assessment_pattern" 
+                    rows="3">' . htmlspecialchars($subjectMapping['assessment_pattern']) . '</textarea>
+            <small class="form-text text-muted">Enter assessment pattern in JSON format</small>
+        </div>';
     }
 }

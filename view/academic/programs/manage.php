@@ -232,7 +232,7 @@
                             <i class="fas fa-book fa-2x mb-2"></i>
                             <h5>Manage Curriculum</h5>
                             <p class="mb-3">Design program curriculum</p>
-                            <a href="#" class="btn btn-light">Manage</a>
+                            <a href="<?php echo BASE_URL; ?>/academic/curriculum/manage" class="btn btn-light">Manage</a>
                         </div>
                     </div>
                 </div>
