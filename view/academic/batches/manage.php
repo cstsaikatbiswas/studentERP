@@ -36,9 +36,86 @@
                 </div>
             <?php endif; ?>
 
+            <!-- Filter Section -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-filter mr-1"></i> Filter Batches
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="<?php echo BASE_URL; ?>/academic/batches" id="filterForm">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="program_filter" class="font-weight-bold">Program</label>
+                                    <select class="form-control" id="program_filter" name="program_id">
+                                        <option value="">All Programs</option>
+                                        <?php foreach ($programs as $program): ?>
+                                            <option value="<?php echo $program['id']; ?>" 
+                                                <?php echo isset($_GET['program_id']) && $_GET['program_id'] == $program['id'] ? 'selected' : ''; ?>>
+                                                <?php echo $program['name']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="year_filter" class="font-weight-bold">Batch Year</label>
+                                    <select class="form-control" id="year_filter" name="batch_year">
+                                        <option value="">All Years</option>
+                                        <?php foreach ($batch_years as $year): ?>
+                                            <option value="<?php echo $year['batch_year']; ?>" 
+                                                <?php echo isset($_GET['batch_year']) && $_GET['batch_year'] == $year['batch_year'] ? 'selected' : ''; ?>>
+                                                <?php echo $year['batch_year']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="status_filter" class="font-weight-bold">Status</label>
+                                    <select class="form-control" id="status_filter" name="status">
+                                        <option value="">All Status</option>
+                                        <option value="active" <?php echo isset($_GET['status']) && $_GET['status'] == 'active' ? 'selected' : ''; ?>>Active</option>
+                                        <option value="completed" <?php echo isset($_GET['status']) && $_GET['status'] == 'completed' ? 'selected' : ''; ?>>Completed</option>
+                                        <option value="upcoming" <?php echo isset($_GET['status']) && $_GET['status'] == 'upcoming' ? 'selected' : ''; ?>>Upcoming</option>
+                                        <option value="cancelled" <?php echo isset($_GET['status']) && $_GET['status'] == 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="department_filter" class="font-weight-bold">Department</label>
+                                    <select class="form-control" id="department_filter" name="department_id">
+                                        <option value="">All Departments</option>
+                                        <?php foreach ($departments as $dept): ?>
+                                            <option value="<?php echo $dept['id']; ?>" 
+                                                <?php echo isset($_GET['department_id']) && $_GET['department_id'] == $dept['id'] ? 'selected' : ''; ?>>
+                                                <?php echo $dept['name']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search mr-1"></i> Apply Filters
+                            </button>
+                            <a href="<?php echo BASE_URL; ?>/academic/batches" class="btn btn-secondary">
+                                <i class="fas fa-redo mr-1"></i> Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- Batch Statistics -->
-            <div class="row">
-                <div class="col-xl-3 col-md-6 mb-4">
+            <div class="row mb-4">
+                <div class="col-md-3">
                     <div class="card border-left-primary shadow h-100 py-2">
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
@@ -46,7 +123,9 @@
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                         Total Batches
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalBatches">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <?php echo $batch_stats['total_batches'] ?? 0; ?>
+                                    </div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-users fa-2x text-gray-300"></i>
@@ -55,8 +134,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
+                <div class="col-md-3">
                     <div class="card border-left-success shadow h-100 py-2">
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
@@ -64,7 +142,9 @@
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                         Active Batches
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="activeBatches">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <?php echo $batch_stats['active_batches'] ?? 0; ?>
+                                    </div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-check-circle fa-2x text-gray-300"></i>
@@ -73,8 +153,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
+                <div class="col-md-3">
                     <div class="card border-left-info shadow h-100 py-2">
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
@@ -82,7 +161,9 @@
                                     <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                         Total Students
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalStudents">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <?php echo $batch_stats['total_students'] ?? 0; ?>
+                                    </div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
@@ -91,74 +172,24 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
+                <div class="col-md-3">
                     <div class="card border-left-warning shadow h-100 py-2">
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                        Completed Batches
+                                        Avg Batch Size
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="completedBatches">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <?php echo round($batch_stats['avg_batch_size'] ?? 0, 1); ?>
+                                    </div>
                                 </div>
                                 <div class="col-auto">
-                                    <i class="fas fa-trophy fa-2x text-gray-300"></i>
+                                    <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Filters -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-light">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-filter mr-1"></i> Filter Batches
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <form id="batchFilters">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="program_filter">Program</label>
-                                    <select class="form-control" id="program_filter" name="program_id">
-                                        <option value="">All Programs</option>
-                                        <?php foreach ($programs as $program): ?>
-                                            <option value="<?php echo $program['id']; ?>">
-                                                <?php echo $program['name']; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="year_filter">Batch Year</label>
-                                    <select class="form-control" id="year_filter" name="batch_year">
-                                        <option value="">All Years</option>
-                                        <?php for ($year = date('Y'); $year >= 2000; $year--): ?>
-                                            <option value="<?php echo $year; ?>"><?php echo $year; ?></option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="status_filter">Status</label>
-                                    <select class="form-control" id="status_filter" name="status">
-                                        <option value="">All Status</option>
-                                        <option value="active">Active</option>
-                                        <option value="completed">Completed</option>
-                                        <option value="upcoming">Upcoming</option>
-                                        <option value="cancelled">Cancelled</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
 
@@ -188,10 +219,10 @@
                                         <th>Batch Code</th>
                                         <th>Batch Name</th>
                                         <th>Program</th>
-                                        <th>Batch Year</th>
-                                        <th>Duration</th>
+                                        <th>Department</th>
+                                        <th>Year</th>
                                         <th>Students</th>
-                                        <th>Current Semester</th>
+                                        <th>Semester</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -204,29 +235,46 @@
                                                 <span class="badge badge-info"><?php echo $batch['batch_code']; ?></span>
                                             </td>
                                             <td>
-                                                <strong><?php echo $batch['batch_name'] ?: 'N/A'; ?></strong>
+                                                <strong><?php echo $batch['batch_name']; ?></strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <?php echo date('M Y', strtotime($batch['start_date'])); ?> - 
+                                                    <?php echo $batch['end_date'] ? date('M Y', strtotime($batch['end_date'])) : 'Present'; ?>
+                                                </small>
                                             </td>
                                             <td>
                                                 <strong><?php echo $batch['program_name']; ?></strong>
                                                 <br><small class="text-muted"><?php echo $batch['program_code']; ?></small>
                                             </td>
-                                            <td><?php echo $batch['batch_year']; ?></td>
+                                            <td><?php echo $batch['department_name']; ?></td>
                                             <td>
-                                                <?php echo date('M Y', strtotime($batch['start_date'])); ?> - 
-                                                <?php echo $batch['end_date'] ? date('M Y', strtotime($batch['end_date'])) : 'Present'; ?>
+                                                <span class="badge badge-secondary"><?php echo $batch['batch_year']; ?></span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-primary"><?php echo $batch['total_students']; ?></span> / 
-                                                <span class="badge badge-secondary"><?php echo $batch['max_capacity']; ?></span>
+                                                <div class="progress" style="height: 20px;">
+                                                    <?php 
+                                                        $capacity_percentage = ($batch['student_count'] / $batch['max_capacity']) * 100;
+                                                        $progress_class = $capacity_percentage >= 90 ? 'bg-danger' : 
+                                                                         ($capacity_percentage >= 75 ? 'bg-warning' : 'bg-success');
+                                                    ?>
+                                                    <div class="progress-bar <?php echo $progress_class; ?>" 
+                                                         role="progressbar" 
+                                                         style="width: <?php echo min($capacity_percentage, 100); ?>%"
+                                                         aria-valuenow="<?php echo $batch['student_count']; ?>" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="<?php echo $batch['max_capacity']; ?>">
+                                                        <?php echo $batch['student_count']; ?>/<?php echo $batch['max_capacity']; ?>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td>
-                                                <span class="badge badge-warning">Semester <?php echo $batch['current_semester']; ?></span>
+                                                <span class="badge badge-primary">Sem <?php echo $batch['current_semester']; ?></span>
                                             </td>
                                             <td>
                                                 <span class="badge badge-<?php 
                                                     echo $batch['status'] == 'active' ? 'success' : 
-                                                          ($batch['status'] == 'completed' ? 'info' : 
-                                                          ($batch['status'] == 'upcoming' ? 'warning' : 'secondary')); 
+                                                          ($batch['status'] == 'completed' ? 'secondary' : 
+                                                          ($batch['status'] == 'upcoming' ? 'warning' : 'danger'));
                                                 ?>">
                                                     <?php echo ucfirst($batch['status']); ?>
                                                 </span>
@@ -234,7 +282,7 @@
                                             <td>
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     <a href="<?php echo BASE_URL; ?>/academic/batches/view?id=<?php echo $batch['id']; ?>" 
-                                                       class="btn btn-info" title="View Batch">
+                                                       class="btn btn-info" title="View Details">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                     <a href="<?php echo BASE_URL; ?>/academic/batches/edit?id=<?php echo $batch['id']; ?>" 
@@ -244,7 +292,7 @@
                                                     <button type="button" 
                                                             class="btn btn-danger delete-batch" 
                                                             data-id="<?php echo $batch['id']; ?>"
-                                                            data-name="<?php echo $batch['batch_code']; ?>"
+                                                            data-name="<?php echo $batch['batch_name']; ?>"
                                                             title="Delete Batch">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
@@ -274,7 +322,7 @@
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to delete batch "<strong id="deleteBatchName"></strong>"?</p>
-                <p class="text-danger"><small>This action cannot be undone. All associated student records will be affected.</small></p>
+                <p class="text-danger"><small>This action cannot be undone. If this batch has students enrolled, it cannot be deleted.</small></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -307,35 +355,13 @@ $(document).ready(function() {
         $('#deleteBatchModal').modal('show');
     });
 
-    // Filter functionality
-    $('#program_filter, #year_filter, #status_filter').on('change', function() {
-        // Implement AJAX filtering or table reload
-        filterBatches();
+    // Filter form submission
+    $('#filterForm').on('submit', function(e) {
+        // Convert form data to URL parameters
+        const formData = $(this).serialize();
+        const url = '<?php echo BASE_URL; ?>/academic/batches?' + formData;
+        window.location.href = url;
+        e.preventDefault();
     });
-
-    // Load batch statistics
-    loadBatchStatistics();
 });
-
-function filterBatches() {
-    const programId = $('#program_filter').val();
-    const batchYear = $('#year_filter').val();
-    const status = $('#status_filter').val();
-    
-    // You can implement AJAX filtering here
-    console.log('Filtering batches:', { programId, batchYear, status });
-}
-
-function loadBatchStatistics() {
-    $.ajax({
-        url: '<?php echo BASE_URL; ?>/academic/api/batch-statistics',
-        method: 'GET',
-        success: function(stats) {
-            $('#totalBatches').text(stats.total_batches || 0);
-            $('#activeBatches').text(stats.active_batches || 0);
-            $('#totalStudents').text(stats.total_students || 0);
-            $('#completedBatches').text(stats.completed_batches || 0);
-        }
-    });
-}
 </script>

@@ -227,26 +227,28 @@ class AcademicController {
         exit();
     }
 
-    // Batch Management
+    // Batch Management Methods
     public function batches() {
         AuthController::requireLogin();
 
-        $filters = [];
-        if (isset($_GET['program_id']) && !empty($_GET['program_id'])) {
-            $filters['program_id'] = (int)$_GET['program_id'];
-        }
-        if (isset($_GET['status']) && !empty($_GET['status'])) {
-            $filters['status'] = $_GET['status'];
-        }
-        if (isset($_GET['batch_year']) && !empty($_GET['batch_year'])) {
-            $filters['batch_year'] = (int)$_GET['batch_year'];
-        }
+        // Get filter parameters
+        $filters = [
+            'program_id' => isset($_GET['program_id']) ? $_GET['program_id'] : null,
+            'batch_year' => isset($_GET['batch_year']) ? $_GET['batch_year'] : null,
+            'status' => isset($_GET['status']) ? $_GET['status'] : null,
+            'department_id' => isset($_GET['department_id']) ? $_GET['department_id'] : null,
+        ];
 
+        // Get batches with filters
         $batches = $this->batchModel->readAll($filters);
-        $programs = $this->programModel->readAll();
-        $batchStats = $this->batchModel->getStatistics();
+        
+        // Get data for filters
+        $programs = $this->getAllPrograms();
+        $departments = $this->getAllDepartments();
+        $batch_years = $this->batchModel->getBatchYears();
+        $batch_stats = $this->batchModel->getStatistics();
 
-        $page_title = "Academic Batches";
+        $page_title = "Batch Management";
         include BASE_PATH . '/view/layout/header.php';
         include BASE_PATH . '/view/academic/batches/manage.php';
         include BASE_PATH . '/view/layout/footer.php';
@@ -258,17 +260,15 @@ class AcademicController {
         $error = '';
         $success = '';
         $formData = [
-            'program_id' => '', 'batch_year' => date('Y'), 'batch_code' => '',
-            'batch_name' => '', 'start_date' => '', 'end_date' => '',
-            'current_semester' => 1, 'total_students' => 0, 'max_capacity' => 60,
-            'class_teacher_id' => '', 'fee_structure' => '', 'admission_criteria' => '',
-            'status' => 'active'
+            'program_id' => '', 'batch_year' => date('Y'), 'batch_code' => '', 'batch_name' => '',
+            'start_date' => date('Y-m-d'), 'end_date' => '', 'current_semester' => 1,
+            'max_capacity' => 60, 'class_teacher_id' => '', 'fee_structure' => '',
+            'admission_criteria' => '', 'status' => 'upcoming'
         ];
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $formData = array_map([$this, 'sanitizeInput'], $_POST);
-            $formData['created_by'] = $_SESSION['user_id'];
-
+            
             $validationError = $this->validateBatchData($formData);
             
             if ($validationError) {
@@ -281,31 +281,36 @@ class AcademicController {
                 $this->batchModel->start_date = $formData['start_date'];
                 $this->batchModel->end_date = $formData['end_date'];
                 $this->batchModel->current_semester = $formData['current_semester'];
-                $this->batchModel->total_students = $formData['total_students'];
                 $this->batchModel->max_capacity = $formData['max_capacity'];
                 $this->batchModel->class_teacher_id = $formData['class_teacher_id'];
                 $this->batchModel->fee_structure = $formData['fee_structure'];
                 $this->batchModel->admission_criteria = $formData['admission_criteria'];
                 $this->batchModel->status = $formData['status'];
-                $this->batchModel->created_by = $formData['created_by'];
+                $this->batchModel->created_by = $_SESSION['user_id'];
 
                 if ($this->batchModel->codeExists()) {
                     $error = 'Batch code already exists for this program. Please use a different code.';
                 } else {
                     if ($this->batchModel->create()) {
-                        $_SESSION['success_message'] = 'Batch added successfully!';
-                        header('Location: ' . BASE_URL . '/academic/batches');
-                        exit();
+                        $success = 'Batch created successfully!';
+                        $formData = [
+                            'program_id' => '', 'batch_year' => date('Y'), 'batch_code' => '', 'batch_name' => '',
+                            'start_date' => date('Y-m-d'), 'end_date' => '', 'current_semester' => 1,
+                            'max_capacity' => 60, 'class_teacher_id' => '', 'fee_structure' => '',
+                            'admission_criteria' => '', 'status' => 'upcoming'
+                        ];
                     } else {
-                        $error = 'Failed to add batch. Please try again.';
+                        $error = 'Failed to create batch. Please try again.';
                     }
                 }
             }
         }
 
-        $programs = $this->programModel->readAll();
+        // Get data for form
+        $programs = $this->getAllPrograms();
+        $faculty_members = $this->getAllFacultyMembers();
 
-        $page_title = "Add Academic Batch";
+        $page_title = "Add New Batch";
         include BASE_PATH . '/view/layout/header.php';
         include BASE_PATH . '/view/academic/batches/add.php';
         include BASE_PATH . '/view/layout/footer.php';
@@ -345,7 +350,6 @@ class AcademicController {
                 $this->batchModel->start_date = $formData['start_date'];
                 $this->batchModel->end_date = $formData['end_date'];
                 $this->batchModel->current_semester = $formData['current_semester'];
-                $this->batchModel->total_students = $formData['total_students'];
                 $this->batchModel->max_capacity = $formData['max_capacity'];
                 $this->batchModel->class_teacher_id = $formData['class_teacher_id'];
                 $this->batchModel->fee_structure = $formData['fee_structure'];
@@ -363,9 +367,10 @@ class AcademicController {
             $formData = $batch;
         }
 
-        $programs = $this->programModel->readAll();
+        // Get data for form
+        $faculty_members = $this->getAllFacultyMembers();
 
-        $page_title = "Edit Academic Batch";
+        $page_title = "Edit Batch";
         include BASE_PATH . '/view/layout/header.php';
         include BASE_PATH . '/view/academic/batches/edit.php';
         include BASE_PATH . '/view/layout/footer.php';
@@ -388,10 +393,7 @@ class AcademicController {
             exit();
         }
 
-        // Get batch progress (would typically get from student progress)
-        $batchProgress = $this->batchModel->getBatchProgress();
-
-        $page_title = "View Batch: " . $batch['batch_name'];
+        $page_title = "Batch Details - " . $batch['batch_name'];
         include BASE_PATH . '/view/layout/header.php';
         include BASE_PATH . '/view/academic/batches/view.php';
         include BASE_PATH . '/view/layout/footer.php';
@@ -411,13 +413,133 @@ class AcademicController {
         if ($this->batchModel->delete()) {
             $_SESSION['success_message'] = 'Batch deleted successfully!';
         } else {
-            $_SESSION['error_message'] = 'Cannot delete batch. It may have enrolled students.';
+            $_SESSION['error_message'] = 'Cannot delete batch. It may have students enrolled.';
         }
 
         header('Location: ' . BASE_URL . '/academic/batches');
         exit();
     }
 
+    // Helper Methods
+    private function validateBatchData($data, $id = null) {
+        if (empty($data['program_id']) || empty($data['batch_year']) || empty($data['batch_code']) || empty($data['batch_name'])) {
+            return 'Program, Batch Year, Batch Code, and Batch Name are required fields.';
+        }
+
+        if (empty($data['start_date'])) {
+            return 'Start date is required.';
+        }
+
+        if (strlen($data['batch_code']) < 2 || strlen($data['batch_code']) > 50) {
+            return 'Batch code must be between 2 and 50 characters.';
+        }
+
+        if (strlen($data['batch_name']) < 2 || strlen($data['batch_name']) > 255) {
+            return 'Batch name must be between 2 and 255 characters.';
+        }
+
+        if ($data['start_date'] && $data['end_date'] && $data['start_date'] > $data['end_date']) {
+            return 'Start date cannot be after end date.';
+        }
+
+        if ($data['max_capacity'] < 1 || $data['max_capacity'] > 500) {
+            return 'Maximum capacity must be between 1 and 500.';
+        }
+
+        if ($id && isset($data['student_count']) && $data['max_capacity'] < $data['student_count']) {
+            return 'Maximum capacity cannot be less than current student count.';
+        }
+
+        // Validate JSON for fee structure if provided
+        if (!empty($data['fee_structure'])) {
+            json_decode($data['fee_structure']);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return 'Invalid JSON format for fee structure.';
+            }
+        }
+
+        return null;
+    }
+
+    private function getAllPrograms() {
+        $query = "SELECT id, name, code FROM academic_programs WHERE status = 'active' ORDER BY name ASC";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    private function getAllDepartments() {
+        $query = "SELECT id, name FROM departments WHERE status = 'active' ORDER BY name ASC";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    private function getAllFacultyMembers() {
+        $query = "SELECT id, name, email FROM users WHERE role = 'faculty' AND status = 'active' ORDER BY name ASC";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // API Methods
+    public function checkBatchCode() {
+        AuthController::requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $program_id = isset($_POST['program_id']) ? $_POST['program_id'] : null;
+            $batch_code = isset($_POST['batch_code']) ? $_POST['batch_code'] : null;
+            $current_id = isset($_POST['current_id']) ? $_POST['current_id'] : null;
+
+            if ($program_id && $batch_code) {
+                $this->batchModel->program_id = $program_id;
+                $this->batchModel->batch_code = $batch_code;
+                
+                $exists = $this->batchModel->codeExists();
+                
+                // If checking for edit and code belongs to current record, it's okay
+                if ($current_id && $exists) {
+                    // Check if the existing code belongs to the current batch
+                    $query = "SELECT id FROM academic_batches WHERE program_id = ? AND batch_code = ?";
+                    $stmt = $this->db->prepare($query);
+                    $stmt->bind_param("is", $program_id, $batch_code);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $batch = $result->fetch_assoc();
+                    
+                    if ($batch && $batch['id'] == $current_id) {
+                        $exists = false; // It's the same batch, so code is available
+                    }
+                }
+
+                header('Content-Type: application/json');
+                echo json_encode(['exists' => $exists]);
+            }
+        }
+    }
+
+    public function getProgramDetails() {
+        AuthController::requireLogin();
+
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        
+        if ($id) {
+            $query = "SELECT name, code, duration_years, total_semesters, total_credits 
+                    FROM academic_programs 
+                    WHERE id = ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $program = $result->fetch_assoc();
+            
+            header('Content-Type: application/json');
+            echo json_encode($program);
+        }
+    }
     // Subject Management
     public function subjects() {
         AuthController::requireLogin();
@@ -766,36 +888,7 @@ class AcademicController {
         return null;
     }
 
-    private function validateBatchData($data, $id = null) {
-        if (empty($data['program_id']) || empty($data['batch_year']) || empty($data['batch_code'])) {
-            return 'Program, Batch Year, and Batch Code are required fields.';
-        }
-
-        if ($data['batch_year'] < 2000 || $data['batch_year'] > 2030) {
-            return 'Batch year must be between 2000 and 2030.';
-        }
-
-        if (strlen($data['batch_code']) < 2 || strlen($data['batch_code']) > 50) {
-            return 'Batch code must be between 2 and 50 characters.';
-        }
-
-        if (!empty($data['start_date']) && !empty($data['end_date'])) {
-            if (strtotime($data['start_date']) > strtotime($data['end_date'])) {
-                return 'Start date cannot be after end date.';
-            }
-        }
-
-        if ($data['max_capacity'] < 1 || $data['max_capacity'] > 1000) {
-            return 'Maximum capacity must be between 1 and 1000.';
-        }
-
-        if ($data['current_semester'] < 1 || $data['current_semester'] > 20) {
-            return 'Current semester must be between 1 and 20.';
-        }
-
-        return null;
-    }
-
+ 
     private function validateSubjectData($data, $id = null) {
         if (empty($data['name']) || empty($data['code'])) {
             return 'Name and Code are required fields.';

@@ -230,12 +230,6 @@ switch ($url) {
         $controller = new AcademicController();
         $controller->curriculum($program_id);
         break;
-
-    case 'academic/curriculum/add-subject':
-        $controller = new AcademicController();
-        $controller->addSubjectToProgram();
-        break;
-
     case 'academic/curriculum/remove-subject':
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         $controller = new AcademicController();
@@ -303,6 +297,7 @@ switch ($url) {
         $controller = new AcademicController();
         $controller->editSubjectForm($id);
         break;
+
     // Subject Management Routes
     case 'academic/subjects':
         $controller = new AcademicController();

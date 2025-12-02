@@ -93,21 +93,7 @@
                                 <i class="fas fa-book mr-2"></i>Subjects
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-calendar-alt mr-2"></i>Class Scheduling
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-clipboard-check mr-2"></i>Attendance
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-chart-line mr-2"></i>Assessment
-                            </a>
-                        </li>
+                       
                     </ul>
                 </div>
             </li>
