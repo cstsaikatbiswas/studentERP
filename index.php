@@ -146,6 +146,63 @@ switch ($url) {
         $controller = new InstituteController();
         $controller->deleteBranch($id);
         break;
+    
+    // Staff Routes
+    case 'staff/manage':
+        $current_page = 'staff/manage';
+        $controller = new StaffController();
+        $controller->manage();
+        break;
+
+    case 'staff/add':
+        $current_page = 'staff/add';
+        $controller = new StaffController();
+        $controller->add();
+        break;
+
+    case 'staff/edit':
+        $current_page = 'staff/edit';
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new StaffController();
+        $controller->edit($id);
+        break;
+
+    case 'staff/view':
+        $current_page = 'staff/view';
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new StaffController();
+        $controller->view($id);
+        break;
+
+    case 'staff/delete':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller = new StaffController();
+        $controller->delete($id);
+        break;
+
+    case 'staff/allocation':
+        $current_page = 'staff/allocation';
+        $staff_id = isset($_GET['staff_id']) ? $_GET['staff_id'] : null;
+        $controller = new StaffController();
+        $controller->allocation($staff_id);
+        break;
+
+    case 'staff/api/update-allocation-status':
+        $controller = new StaffController();
+        $controller->updateAllocationStatus();
+        break;
+
+    case 'staff/api/statistics':
+        $controller = new StaffController();
+        $controller->getStatistics();
+        break;
+
+    case 'staff/api/departments':
+        $institute_id = isset($_GET['institute_id']) ? $_GET['institute_id'] : null;
+        $controller = new StaffController();
+        $controller->getDepartmentsByInstitute($institute_id);
+        break;
+
     // Academic Module Routes
     case 'academic/programs':
         $controller = new AcademicController();

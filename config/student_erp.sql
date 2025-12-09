@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 04, 2025 at 06:00 AM
+-- Generation Time: Dec 09, 2025 at 07:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -81,8 +81,8 @@ CREATE TABLE `academic_programs` (
 --
 
 INSERT INTO `academic_programs` (`id`, `name`, `code`, `description`, `duration_years`, `total_credits`, `department_id`, `degree_type`, `program_level`, `accreditation_status`, `start_date`, `end_date`, `total_semesters`, `max_students`, `current_students`, `program_fee`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 'Full Time Diploma Course', 'DIP1', 'Full Time Diploma Course Full Time Diploma Course', 3, 100, 1, 'diploma', 'diploma', 'accredited', '2025-08-01', '2026-01-31', 6, 60, 52, 152000.00, '', 1, '2025-11-14 07:06:54', '2025-11-14 07:06:54'),
-(2, 'Vocational Diploma Course', 'DIP2', 'Vocational Diploma Course (2 years)', 2, 80, 1, 'diploma', 'diploma', 'accredited', '2025-08-01', '2026-01-31', 4, 20, 15, 100000.00, '', 1, '2025-11-14 07:08:32', '2025-11-14 07:08:32');
+(1, 'Full Time Diploma Course', 'DIP1', 'Full Time Diploma Course Full Time Diploma Course', 3, 100, 1, 'diploma', 'diploma', 'accredited', '2025-08-01', '2026-01-31', 6, 60, 52, 152000.00, 'active', 1, '2025-11-14 07:06:54', '2025-12-04 05:14:36'),
+(2, 'Vocational Diploma Course', 'DIP2', 'Vocational Diploma Course (2 years)', 2, 80, 1, 'diploma', 'diploma', 'accredited', '2025-08-01', '2026-01-31', 4, 20, 15, 100000.00, 'active', 1, '2025-11-14 07:08:32', '2025-12-04 05:14:36');
 
 -- --------------------------------------------------------
 
@@ -226,6 +226,194 @@ CREATE TABLE `program_subjects` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `program_subjects`
+--
+
+INSERT INTO `program_subjects` (`id`, `program_id`, `subject_id`, `semester`, `is_optional`, `min_credits`, `max_credits`, `course_code`, `course_type`, `teaching_methodology`, `assessment_pattern`, `status`, `created_at`, `updated_at`) VALUES
+(1, 2, 2, 4, 0, 2.00, 3.00, '', 'mandatory', 'sdfdsfds', NULL, 'active', '2025-12-09 05:34:59', '2025-12-09 05:34:59'),
+(2, 2, 1, 1, 0, 5.00, 5.00, 'EM', 'mandatory', '', NULL, 'active', '2025-12-09 05:36:02', '2025-12-09 05:36:02'),
+(3, 2, 3, 4, 0, 1.00, 3.00, 'COPC', 'mandatory', '', NULL, 'active', '2025-12-09 05:39:56', '2025-12-09 05:39:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff`
+--
+
+CREATE TABLE `staff` (
+  `id` int(11) NOT NULL,
+  `staff_id` varchar(50) NOT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `middle_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `gender` enum('male','female','other') NOT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `alternate_phone` varchar(20) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `pincode` varchar(20) DEFAULT NULL,
+  `emergency_contact_name` varchar(100) DEFAULT NULL,
+  `emergency_contact_phone` varchar(20) DEFAULT NULL,
+  `category_id` int(11) NOT NULL,
+  `designation_id` int(11) NOT NULL,
+  `qualification` text DEFAULT NULL,
+  `experience_years` int(11) DEFAULT 0,
+  `joining_date` date DEFAULT NULL,
+  `salary` decimal(10,2) DEFAULT NULL,
+  `bank_name` varchar(100) DEFAULT NULL,
+  `bank_account_number` varchar(50) DEFAULT NULL,
+  `ifsc_code` varchar(20) DEFAULT NULL,
+  `pan_number` varchar(20) DEFAULT NULL,
+  `aadhaar_number` varchar(20) DEFAULT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `status` enum('active','inactive','suspended','retired','resigned') DEFAULT 'active',
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff`
+--
+
+INSERT INTO `staff` (`id`, `staff_id`, `first_name`, `middle_name`, `last_name`, `gender`, `date_of_birth`, `email`, `phone`, `alternate_phone`, `address`, `city`, `state`, `pincode`, `emergency_contact_name`, `emergency_contact_phone`, `category_id`, `designation_id`, `qualification`, `experience_years`, `joining_date`, `salary`, `bank_name`, `bank_account_number`, `ifsc_code`, `pan_number`, `aadhaar_number`, `profile_image`, `status`, `notes`, `created_at`, `updated_at`) VALUES
+(1, 'TPRI2025120001', 'Sudipta', 'Ghosh', 'Sur', 'female', '1980-12-12', 'abcf@domain.com', '1234658790', '5648795610', 'barasat', 'Barasat', 'West Bengal', '700126', '3265745', '87656789', 1, 1, 'Mtech', 10, '2022-12-09', 50000.00, 'SBI', '4567892135648', 'SBIN001770', 'bpb47a', '456765892156', NULL, 'active', 'gfsdgsdgsfgs sdgfgsdgsdg', '2025-12-09 06:48:51', '2025-12-09 06:48:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_allocations`
+--
+
+CREATE TABLE `staff_allocations` (
+  `id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL,
+  `institute_id` int(11) NOT NULL,
+  `department_id` int(11) DEFAULT NULL,
+  `allocation_type` enum('primary','additional','temporary') DEFAULT 'primary',
+  `start_date` date NOT NULL,
+  `end_date` date DEFAULT NULL,
+  `reporting_to` int(11) DEFAULT NULL,
+  `responsibilities` text DEFAULT NULL,
+  `workload_hours` int(11) DEFAULT 40,
+  `status` enum('active','completed','transferred','terminated') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_categories`
+--
+
+CREATE TABLE `staff_categories` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff_categories`
+--
+
+INSERT INTO `staff_categories` (`id`, `name`, `code`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Teaching Staff', 'TEACHING', 'Faculty and teaching personnel', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(2, 'Non-Teaching Staff', 'NON_TEACHING', 'Administrative and support staff', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_designations`
+--
+
+CREATE TABLE `staff_designations` (
+  `id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `level` int(11) DEFAULT 1,
+  `description` text DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff_designations`
+--
+
+INSERT INTO `staff_designations` (`id`, `category_id`, `name`, `code`, `level`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Principal', 'PRINCIPAL', 1, 'Institute Principal/Head', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(2, 1, 'Vice Principal', 'VICE_PRINCIPAL', 2, 'Assistant Principal', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(3, 1, 'Professor', 'PROFESSOR', 3, 'Senior Professor', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(4, 1, 'Associate Professor', 'ASSOC_PROF', 4, 'Associate Professor', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(5, 1, 'Assistant Professor', 'ASST_PROF', 5, 'Assistant Professor', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(6, 1, 'Lecturer', 'LECTURER', 6, 'Lecturer/Instructor', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(7, 1, 'Laboratory Technical Assistant', 'LAB_TECH', 7, 'Lab Technician/Assistant', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(8, 2, 'Admin Manager', 'ADMIN_MGR', 1, 'Administrative Manager', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(9, 2, 'Office Staff', 'OFFICE_STAFF', 2, 'Office Administration Staff', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(10, 2, 'Accountant', 'ACCOUNTANT', 3, 'Finance and Accounts', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(11, 2, 'Clerk', 'CLERK', 4, 'Office Clerk', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(12, 2, 'Peon', 'PEON', 5, 'Office Assistant', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(13, 2, 'Security Guard', 'SECURITY', 6, 'Security Personnel', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38'),
+(14, 2, 'Cleaner', 'CLEANER', 7, 'Cleaning Staff', 'active', '2025-12-09 06:14:38', '2025-12-09 06:14:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_documents`
+--
+
+CREATE TABLE `staff_documents` (
+  `id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL,
+  `document_type` varchar(100) NOT NULL,
+  `document_name` varchar(255) NOT NULL,
+  `document_path` varchar(500) NOT NULL,
+  `document_number` varchar(100) DEFAULT NULL,
+  `issue_date` date DEFAULT NULL,
+  `expiry_date` date DEFAULT NULL,
+  `verified` tinyint(1) DEFAULT 0,
+  `notes` text DEFAULT NULL,
+  `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_leave_balance`
+--
+
+CREATE TABLE `staff_leave_balance` (
+  `id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL,
+  `leave_year` year(4) NOT NULL,
+  `casual_leave` int(11) DEFAULT 12,
+  `sick_leave` int(11) DEFAULT 12,
+  `earned_leave` int(11) DEFAULT 15,
+  `maternity_leave` int(11) DEFAULT 180,
+  `paternity_leave` int(11) DEFAULT 15,
+  `other_leave` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff_leave_balance`
+--
+
+INSERT INTO `staff_leave_balance` (`id`, `staff_id`, `leave_year`, `casual_leave`, `sick_leave`, `earned_leave`, `maternity_leave`, `paternity_leave`, `other_leave`, `created_at`, `updated_at`) VALUES
+(1, 1, '2025', 12, 12, 15, 180, 15, 0, '2025-12-09 06:48:51', '2025-12-09 06:48:51');
 
 -- --------------------------------------------------------
 
@@ -534,7 +722,9 @@ CREATE TABLE `subjects` (
 --
 
 INSERT INTO `subjects` (`id`, `name`, `code`, `description`, `credit_hours`, `theory_hours`, `practical_hours`, `subject_type`, `difficulty_level`, `department_id`, `prerequisites`, `learning_outcomes`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 'Eng. Mechanics', 'EMECH', 'engineering mechanics', 3.00, 21, 19, 'core', 'basic', 1, 'fsdfsdf', 'sdfsdfsdf', 'active', 1, '2025-11-19 10:33:05', '2025-11-19 10:33:05');
+(1, 'Eng. Mechanics', 'EMECH', 'engineering mechanics', 3.00, 21, 19, 'core', 'basic', 1, 'fsdfsdf', 'sdfsdfsdf', 'active', 1, '2025-11-19 10:33:05', '2025-11-19 10:33:05'),
+(2, 'INTERNET OF THINGS', 'IOT', 'FDSFDSFDSFSD', 10.00, 8, 2, 'core', 'basic', 1, 'BASIC ELECTRONICS,', '', 'active', 1, '2025-12-09 05:10:27', '2025-12-09 05:10:27'),
+(3, 'Microprocessor', 'COPC301', 'MICROPROCESSOR AND MICROCONTROLLER BASED ON 8051 AND 8086', 3.00, 2, 1, 'core', 'intermediate', 1, '', '', 'active', 1, '2025-12-09 05:38:59', '2025-12-09 05:38:59');
 
 -- --------------------------------------------------------
 
@@ -625,6 +815,55 @@ ALTER TABLE `program_subjects`
   ADD KEY `subject_id` (`subject_id`),
   ADD KEY `idx_program_subject_program` (`program_id`),
   ADD KEY `idx_program_subject_semester` (`semester`);
+
+--
+-- Indexes for table `staff`
+--
+ALTER TABLE `staff`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `staff_id` (`staff_id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `category_id` (`category_id`),
+  ADD KEY `designation_id` (`designation_id`);
+
+--
+-- Indexes for table `staff_allocations`
+--
+ALTER TABLE `staff_allocations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `staff_id` (`staff_id`),
+  ADD KEY `institute_id` (`institute_id`),
+  ADD KEY `department_id` (`department_id`),
+  ADD KEY `reporting_to` (`reporting_to`);
+
+--
+-- Indexes for table `staff_categories`
+--
+ALTER TABLE `staff_categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `code` (`code`);
+
+--
+-- Indexes for table `staff_designations`
+--
+ALTER TABLE `staff_designations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `code` (`code`),
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- Indexes for table `staff_documents`
+--
+ALTER TABLE `staff_documents`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `staff_id` (`staff_id`);
+
+--
+-- Indexes for table `staff_leave_balance`
+--
+ALTER TABLE `staff_leave_balance`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_staff_year` (`staff_id`,`leave_year`);
 
 --
 -- Indexes for table `students`
@@ -772,7 +1011,43 @@ ALTER TABLE `institute_types`
 -- AUTO_INCREMENT for table `program_subjects`
 --
 ALTER TABLE `program_subjects`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `staff`
+--
+ALTER TABLE `staff`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `staff_allocations`
+--
+ALTER TABLE `staff_allocations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `staff_categories`
+--
+ALTER TABLE `staff_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `staff_designations`
+--
+ALTER TABLE `staff_designations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `staff_documents`
+--
+ALTER TABLE `staff_documents`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `staff_leave_balance`
+--
+ALTER TABLE `staff_leave_balance`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `students`
@@ -826,7 +1101,7 @@ ALTER TABLE `student_subject_enrollment`
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -871,6 +1146,40 @@ ALTER TABLE `departments`
 ALTER TABLE `program_subjects`
   ADD CONSTRAINT `program_subjects_ibfk_1` FOREIGN KEY (`program_id`) REFERENCES `academic_programs` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `program_subjects_ibfk_2` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `staff`
+--
+ALTER TABLE `staff`
+  ADD CONSTRAINT `staff_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `staff_categories` (`id`),
+  ADD CONSTRAINT `staff_ibfk_2` FOREIGN KEY (`designation_id`) REFERENCES `staff_designations` (`id`);
+
+--
+-- Constraints for table `staff_allocations`
+--
+ALTER TABLE `staff_allocations`
+  ADD CONSTRAINT `staff_allocations_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staff_allocations_ibfk_2` FOREIGN KEY (`institute_id`) REFERENCES `institutes` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staff_allocations_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `staff_allocations_ibfk_4` FOREIGN KEY (`reporting_to`) REFERENCES `staff` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `staff_designations`
+--
+ALTER TABLE `staff_designations`
+  ADD CONSTRAINT `staff_designations_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `staff_categories` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `staff_documents`
+--
+ALTER TABLE `staff_documents`
+  ADD CONSTRAINT `staff_documents_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `staff_leave_balance`
+--
+ALTER TABLE `staff_leave_balance`
+  ADD CONSTRAINT `staff_leave_balance_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `students`

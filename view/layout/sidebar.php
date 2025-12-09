@@ -34,19 +34,19 @@
                         <li class="nav-item">
                             <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/manage') ? 'active' : ''; ?>" 
                                href="<?= BASE_URL?>/institutes/manage">
-                                <i class="fas fa-list mr-2"></i>Manage Institutes
+                                <i class="fas fa-list mr-2"></i>Manage
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/add') ? 'active' : ''; ?>" 
                                href="<?= BASE_URL?>/institutes/add">
-                                <i class="fas fa-plus-circle mr-2"></i>Add Institute
+                                <i class="fas fa-plus-circle mr-2"></i>Add
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/types') ? 'active' : ''; ?>" 
                                href="<?= BASE_URL?>/institutes/types">
-                                <i class="fas fa-tags mr-2"></i>Institute Types
+                                <i class="fas fa-tags mr-2"></i>Types
                             </a>
                         </li>
                         <li class="nav-item">
@@ -59,6 +59,12 @@
                             <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/branches') ? 'active' : ''; ?>" 
                                href="<?= BASE_URL?>/institutes/branches">
                                 <i class="fas fa-code-branch mr-2"></i>Branches
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo (isset($current_page) && $current_page == 'institutes/faculty') ? 'active' : ''; ?>" 
+                               href="<?= BASE_URL?>/staff/manage">
+                                <i class="fas fa-users mr-2"></i>Staff Allocation
                             </a>
                         </li>
                     </ul>
@@ -78,13 +84,13 @@
                         <li class="nav-item">
                             <a class="nav-link <?php echo (isset($current_page) && $current_page == 'academic/programs') ? 'active' : ''; ?>" 
                             href="<?php echo BASE_URL; ?>/academic/programs">
-                                <i class="fas fa-list mr-2"></i>Programs & Courses
+                                <i class="fas fa-list mr-2"></i>Programs
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo (isset($current_page) && $current_page == 'academic/batches') ? 'active' : ''; ?>" 
                             href="<?php echo BASE_URL; ?>/academic/batches">
-                                <i class="fas fa-users mr-2"></i>Batch Management
+                                <i class="fas fa-users mr-2"></i>Batch
                             </a>
                         </li>
                         <li class="nav-item">
